@@ -8,131 +8,133 @@
   <script id="code">
     function init() {
       var $ = go.GraphObject.make;  // for conciseness in defining templates
-	  
+      
       myDiagram =
         $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
           {
             initialContentAlignment: go.Spot.Center,
-//			isReadOnly: true,
-			"toolManager.hoverDelay": 100,  // how quickly tooltips are shown
+//            isReadOnly: true,
+            "toolManager.hoverDelay": 100,  // how quickly tooltips are shown
             "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom  // mouse wheel zooms instead of scrolls
-		});
-		
-		// Retourne les paramètres par defaut d'un shape
-		function shapeStyle() {
-			return {
-				// taille souhaitée
-				desiredSize: new go.Size(80, 40),
-				// Ajout d'un tooltip bindé sur la description de l'objet
-				toolTip: 
-				  $(go.Adornment, "Auto",
-					$(go.Shape,{fill:"#CCFFCC"}),//$(go.Shape, new go.Binding("fill", "color")),
-					$(go.TextBlock, { margin: 4 },
-					  new go.Binding("text", "key"))
-				  ),
-				cursor: "Hand",
-				stretch: go.GraphObject.Vertical,
-				click: clickShape
-			};
-		}
-		
-		function clickShape(e, obj) {
-			alert( obj.part.data.desc);
-		}
-		
-		function portStyle(input) {
-			return {
-			  desiredSize: new go.Size(6, 6),
-			  fill: "transparent",
-			  cursor: "Hand"
-			}
-		}
-		
-		//style des liens
-		myDiagram.linkTemplate =
-		$(go.Link, { routing: go.Link.Orthogonal, curve: go.Link.JumpOver, reshapable: true}, $(go.Shape, { strokeWidth: 1, stroke: "#000" }),new go.Binding("points"));
-	
-		// Ajout du modèle de tranfo de puissance
- 		myDiagram.nodeTemplateMap.add("TransfoPuissance", 
-		$(go.Node, "Auto", shapeStyle(),
-		  new go.Binding("location", "loc", go.Point.parse),
-		  new go.Binding("angle", "angle"),
-		  $(go.Shape,
-			{ 	geometryString: "F1 M 470.57,94.2419C 470.57,99.2021 467.13,102.882 463.13,102.882C 459.53,102.882 456.09,99.2021 456.09,94.2419C 456.09,89.2818 459.53,85.2018 463.13,85.2018C 467.13,85.2018 470.57,89.2818 470.57,94.2419 Z M 17.3603,94.2419C 17.3603,99.2021 14.3202,102.882 10.3201,102.882C 6.16003,102.882 3.19997,99.2021 3.19997,94.2419C 3.19997,89.2818 6.16003,85.2018 10.3201,85.2018C 14.3202,85.2018 17.3603,89.2818 17.3603,94.2419 Z M 81.0416,96.242L 18.4803,95.442M 392.408,95.442L 456.41,95.442M 391.768,95.042C 391.768,145.523 354.727,186.484 309.286,186.484C 263.765,186.484 226.805,145.523 226.805,95.042C 226.805,44.5609 263.765,3.60001 309.286,3.60001C 354.727,3.60001 391.768,44.5609 391.768,95.042 Z M 248.565,94.6419C 248.565,145.043 211.604,185.684 166.083,185.684C 120.162,185.684 83.1217,145.043 83.1217,94.6419C 83.1217,44.2409 120.162,3.19998 166.083,3.19998C 211.604,3.19998 248.565,44.2409 248.565,94.6419 Z M 324.807,92.1619L 270.406,92.1619M 351.047,38.4008L 324.007,92.1619L 352.887,142.643M 153.843,94.6419L 124.963,145.923M 126.163,41.6808L 153.123,95.442L 207.444,94.6419"
-				,fill: "white" 
-			}
-		  )
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.5) })
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.5) })
-	      ));	
+        });
+        
+        // Retourne les paramètres par defaut d'un shape
+        function shapeStyle() {
+            return {
+                // taille souhaitée
+                desiredSize: new go.Size(60, 40),
+                // Ajout d'un tooltip bindé sur la description de l'objet
+                toolTip: 
+                  $(go.Adornment, "Auto",
+                    $(go.Shape,{fill:"#CCFFCC"}),
+                    $(go.TextBlock, { margin: 4 },
+                      new go.Binding("text", "key"))
+                  ),
+                cursor: "Hand",
+                stretch: go.GraphObject.Horizontal,
+                click: clickShape
+            };
+        }
+        
+        function clickShape(e, obj) {
+            alert( obj.part.data.desc);
+        }
+        
+        function portStyle(input) {
+            return {
+              desiredSize: new go.Size(4, 4),
+              fill: "transparent",
+              cursor: "Hand"
+            }
+        }
+        
+        //style des liens
+        myDiagram.linkTemplate =
+        $(go.Link, { routing: go.Link.Orthogonal, curve: go.Link.JumpOver, reshapable: true}, $(go.Shape, { strokeWidth: 1, stroke: "#000" }),new go.Binding("points"));
+    
+        // Ajout du modèle de tranfo de puissance
+         myDiagram.nodeTemplateMap.add("TransfoPuissance", 
+        $(go.Node, "Auto", shapeStyle(),
+          new go.Binding("location", "loc", go.Point.parse),
+          new go.Binding("angle", "angle"),
+          $(go.Shape,
+            {     geometryString: "F1 M 470.57,94.2419C 470.57,99.2021 467.13,102.882 463.13,102.882C 459.53,102.882 456.09,99.2021 456.09,94.2419C 456.09,89.2818 459.53,85.2018 463.13,85.2018C 467.13,85.2018 470.57,89.2818 470.57,94.2419 Z M 17.3603,94.2419C 17.3603,99.2021 14.3202,102.882 10.3201,102.882C 6.16003,102.882 3.19997,99.2021 3.19997,94.2419C 3.19997,89.2818 6.16003,85.2018 10.3201,85.2018C 14.3202,85.2018 17.3603,89.2818 17.3603,94.2419 Z M 81.0416,96.242L 18.4803,95.442M 392.408,95.442L 456.41,95.442M 391.768,95.042C 391.768,145.523 354.727,186.484 309.286,186.484C 263.765,186.484 226.805,145.523 226.805,95.042C 226.805,44.5609 263.765,3.60001 309.286,3.60001C 354.727,3.60001 391.768,44.5609 391.768,95.042 Z M 248.565,94.6419C 248.565,145.043 211.604,185.684 166.083,185.684C 120.162,185.684 83.1217,145.043 83.1217,94.6419C 83.1217,44.2409 120.162,3.19998 166.083,3.19998C 211.604,3.19998 248.565,44.2409 248.565,94.6419 Z M 324.807,92.1619L 270.406,92.1619M 351.047,38.4008L 324.007,92.1619L 352.887,142.643M 153.843,94.6419L 124.963,145.923M 126.163,41.6808L 153.123,95.442L 207.444,94.6419"
+                ,fill: "white" , stretch: go.GraphObject.Vertical
+            }
+          )
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.5) })
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.5) })
+          ));    
 
-		// Ajout du modèle de disjoncteur ferme
- 		myDiagram.nodeTemplateMap.add("DisjFerme", 
-		$(go.Node, "Auto", shapeStyle(),
-		  new go.Binding("location", "loc", go.Point.parse),
-		  new go.Binding("angle", "angle"),
-		  $(go.Shape,
-			{ 	geometryString: "F1 M 180.463,60.879L 165.663,26.6383C 146.863,11.998 137.103,-4.56236 129.262,31.0384L 126.462,44.0787M 115.022,44.1587L 139.423,112M 140.383,50.3988L 110.462,112.72M 247.905,79.2794L 108.622,40.1586M 354.467,63.5991L 354.787,96.7198M 242.945,78.6394L 364.627,78.7994M 32.7803,60.479L 32.9403,95.9198M 123.422,78.3994L 12.7799,78.7194"
-				,fill: "white" 
-			}
-		  )
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.5) })
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.5) })
-	      ));		
+        // Ajout du modèle de disjoncteur ferme
+         myDiagram.nodeTemplateMap.add("DisjFerme", 
+        $(go.Node, "Auto", shapeStyle(),
+          new go.Binding("location", "loc", go.Point.parse),
+          new go.Binding("angle", "angle"),
+          $(go.Shape,
+            {     geometryString: "F1 M 180.463,60.879L 165.663,26.6383C 146.863,11.998 137.103,-4.56236 129.262,31.0384L 126.462,44.0787M 115.022,44.1587L 139.423,112M 140.383,50.3988L 110.462,112.72M 247.905,79.2794L 108.622,40.1586M 354.467,63.5991L 354.787,96.7198M 242.945,78.6394L 364.627,78.7994M 32.7803,60.479L 32.9403,95.9198M 123.422,78.3994L 12.7799,78.7194"
+                ,fill: "white" , stretch: go.GraphObject.Vertical
+            }
+          )
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.7) })
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.7) })
+          ));        
 
-		// Ajout du modèle de jeu de barre
- 		myDiagram.nodeTemplateMap.add("jeuBarre", 
-		$(go.Node, "Auto", shapeStyle(),
-		  new go.Binding("location", "loc", go.Point.parse),
-		  new go.Binding("angle", "angle"),
-		  $(go.Shape,
-			{ 	geometryString: "m 50 320 220 0"
-				,fill: "white" 
-			}
-		  ), 
-		  $(go.Shape,
-			{ 	geometryString: "m 160 320 0 70"
-				,fill: "white" 
-			}
-		  ), 
-		  $(go.Shape,
-			{ 	geometryString: "m 160 320 0 -70"
-				,fill: "white" 
-			}
-		  )
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0) })
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0) })
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
-	      ));	
-		
-		// Ajout du modèle de Depart
- 		myDiagram.nodeTemplateMap.add("Tore", 
-		$(go.Node, "Auto", shapeStyle(),
-		  new go.Binding("location", "loc", go.Point.parse),
-		  new go.Binding("angle", "angle"),
-		  $(go.Shape,
-			{ 	geometryString: "F1 M 213.964,108.842C 213.964,166.603 166.683,214.044 108.762,214.044C 50.121,214.044 2.83997,166.603 2.83997,108.842C 2.83997,50.361 50.121,2.83994 108.762,2.83994C 166.683,2.83994 213.964,50.361 213.964,108.842 Z "
-				,fill: "white" 
-			}
-		  )
-		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
-	      ));	
-		
-		// Une fonction pour construire le contenu d'un tooltip
-		function diagramInfo(model) {
-			return 	model.nodeDataArray.length + " noeuds, " + model.linkDataArray.length + " liens";
-		}
-		// Mise en place d'un tooltip sur le background du diagramme
-		myDiagram.toolTip =
-		$(go.Adornment, "Auto",
-		  $(go.Shape, { fill: "#CCFFCC" }),
-		  $(go.TextBlock, { margin: 4 },
-			// on binde le tooltip sur le résultat d'une fonction
-			new go.Binding("text", "", diagramInfo))
-		);
-		
-		// Contenu du diagramme
-		myDiagram.model.nodeDataArray = [
+        // Ajout du modèle de jeu de barre
+         myDiagram.nodeTemplateMap.add("jeuBarre", 
+        $(go.Node, "Auto", shapeStyle(),
+          new go.Binding("location", "loc", go.Point.parse),
+          new go.Binding("angle", "angle"),
+          $(go.Shape,
+            {     geometryString: "m 50 320 220 0"
+                ,fill: "white" 
+            }
+          ), 
+          $(go.Shape,
+            {     geometryString: "m 160 320 0 70"
+                ,fill: "white" 
+            }
+          ), 
+          $(go.Shape,
+            {     geometryString: "m 160 320 0 -70"
+                ,fill: "white" 
+            }
+          )
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0) })
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0) })
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
+          ));    
+        
+        // Ajout du modèle de Depart
+         myDiagram.nodeTemplateMap.add("Tore", 
+        $(go.Node, "Auto", shapeStyle(),
+          new go.Binding("location", "loc", go.Point.parse),
+          // Pour cet élément, on surcharge la taille
+          {desiredSize: new go.Size(40, 40)},
+          new go.Binding("angle", "angle"),
+          $(go.Shape,
+            {     geometryString: "F1 M 213.964,108.842C 213.964,166.603 166.683,214.044 108.762,214.044C 50.121,214.044 2.83997,166.603 2.83997,108.842C 2.83997,50.361 50.121,2.83994 108.762,2.83994C 166.683,2.83994 213.964,50.361 213.964,108.842 Z "
+                ,fill: "white" 
+            }
+          )
+          ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
+          ));    
+        
+        // Une fonction pour construire le contenu d'un tooltip
+        function diagramInfo(model) {
+            return     model.nodeDataArray.length + " noeuds, " + model.linkDataArray.length + " liens";
+        }
+        // Mise en place d'un tooltip sur le background du diagramme
+        myDiagram.toolTip =
+        $(go.Adornment, "Auto",
+          $(go.Shape, { fill: "#CCFFCC" }),
+          $(go.TextBlock, { margin: 4 },
+            // on binde le tooltip sur le résultat d'une fonction
+            new go.Binding("text", "", diagramInfo))
+        );
+        
+        // Contenu du diagramme
+        myDiagram.model.nodeDataArray = [
 {key:"2", loc:"160 10", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
 {key:"3", loc:"160 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
 {key:"4", loc:"230 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
@@ -196,13 +198,13 @@
 {key:"64", loc:"1270 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
 {key:"65", loc:"1010 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
 {key:"58", loc:"270 -70", category:"Tore", desc:"Test Reseau RTE - Test Reseau RTE"}
-		  ];
-		  
-		  // On binde les liens sur les propriétés fromport et toport des liens
-		  myDiagram.model.linkFromPortIdProperty = "fromPort";
+          ];
+          
+          // On binde les liens sur les propriétés fromport et toport des liens
+          myDiagram.model.linkFromPortIdProperty = "fromPort";
           myDiagram.model.linkToPortIdProperty = "toPort";
-		// Liens du diagrame
-		myDiagram.model.linkDataArray = [
+        // Liens du diagrame
+        myDiagram.model.linkDataArray = [
 {from:"3", to:"2", fromPort:"Left0", toPort:"Bottom0", points:[160, 30, 160, 20, 160, 20, 160, 40, 160, 40, 160, 30], Key:"4"},
 {from:"5", to:"4", fromPort:"Bottom0", toPort:"Left0", points:[230, 30, 230, 40, 230, 40, 230, 20, 230, 20, 230, 30], Key:"9"},
 {from:"5", to:"2", fromPort:"Left0", toPort:"Right0", points:[200, 10, 190, 10, 190, 10, 200, 10, 200, 10, 190, 10], Key:"10"},
@@ -284,8 +286,8 @@
 {from:"3", to:"44", fromPort:"Right0", toPort:"Right0", points:[160, 90, 160, 100, 160, 179, 1154, 179, 1154, 410, 1020, 410, 1020, 420, 1020, 410], Key:"420"},
 {from:"64", fromPort:"Right0", points:[1270, 670, 1270, 680, 1333, 680, 1333, 90.25, 401.19749999999988, 90.25, 391.19749999999988, 90.25], Key:"421"},
 {from:"58", to:"6", fromPort:"Bottom0", toPort:"Left0", points:[270, -50, 270, -40, 270, -36, 270, -36, 270, 10, 270, 10, 280, 10], Key:"445"}
-		];
-		myDiagram.zoomToFit();
+        ];
+        myDiagram.zoomToFit();
     }
   </script>
 </head>
