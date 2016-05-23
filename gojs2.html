@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logic Circuit with shiftable ports</title>
+  <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+  <script id="code">
+    function init() {
+      var $ = go.GraphObject.make;  // for conciseness in defining templates
+	  
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
+          {
+            initialContentAlignment: go.Spot.Center,
+//			isReadOnly: true,
+			"toolManager.hoverDelay": 100,  // how quickly tooltips are shown
+            "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom  // mouse wheel zooms instead of scrolls
+		});
+		
+		// Retourne les paramètres par defaut d'un shape
+		function shapeStyle() {
+			return {
+				// taille souhaitée
+				desiredSize: new go.Size(80, 40),
+				// Ajout d'un tooltip bindé sur la description de l'objet
+				toolTip: 
+				  $(go.Adornment, "Auto",
+					$(go.Shape,{fill:"#CCFFCC"}),//$(go.Shape, new go.Binding("fill", "color")),
+					$(go.TextBlock, { margin: 4 },
+					  new go.Binding("text", "key"))
+				  ),
+				cursor: "Hand",
+				stretch: go.GraphObject.Vertical,
+				click: clickShape
+			};
+		}
+		
+		function clickShape(e, obj) {
+			alert( obj.part.data.desc);
+		}
+		
+		function portStyle(input) {
+			return {
+			  desiredSize: new go.Size(6, 6),
+			  fill: "transparent",
+			  cursor: "Hand"
+			}
+		}
+		
+		//style des liens
+		myDiagram.linkTemplate =
+		$(go.Link, { routing: go.Link.Orthogonal, curve: go.Link.JumpOver, reshapable: true}, $(go.Shape, { strokeWidth: 1, stroke: "#000" }),new go.Binding("points"));
+	
+		// Ajout du modèle de tranfo de puissance
+ 		myDiagram.nodeTemplateMap.add("TransfoPuissance", 
+		$(go.Node, "Auto", shapeStyle(),
+		  new go.Binding("location", "loc", go.Point.parse),
+		  new go.Binding("angle", "angle"),
+		  $(go.Shape,
+			{ 	geometryString: "F1 M 470.57,94.2419C 470.57,99.2021 467.13,102.882 463.13,102.882C 459.53,102.882 456.09,99.2021 456.09,94.2419C 456.09,89.2818 459.53,85.2018 463.13,85.2018C 467.13,85.2018 470.57,89.2818 470.57,94.2419 Z M 17.3603,94.2419C 17.3603,99.2021 14.3202,102.882 10.3201,102.882C 6.16003,102.882 3.19997,99.2021 3.19997,94.2419C 3.19997,89.2818 6.16003,85.2018 10.3201,85.2018C 14.3202,85.2018 17.3603,89.2818 17.3603,94.2419 Z M 81.0416,96.242L 18.4803,95.442M 392.408,95.442L 456.41,95.442M 391.768,95.042C 391.768,145.523 354.727,186.484 309.286,186.484C 263.765,186.484 226.805,145.523 226.805,95.042C 226.805,44.5609 263.765,3.60001 309.286,3.60001C 354.727,3.60001 391.768,44.5609 391.768,95.042 Z M 248.565,94.6419C 248.565,145.043 211.604,185.684 166.083,185.684C 120.162,185.684 83.1217,145.043 83.1217,94.6419C 83.1217,44.2409 120.162,3.19998 166.083,3.19998C 211.604,3.19998 248.565,44.2409 248.565,94.6419 Z M 324.807,92.1619L 270.406,92.1619M 351.047,38.4008L 324.007,92.1619L 352.887,142.643M 153.843,94.6419L 124.963,145.923M 126.163,41.6808L 153.123,95.442L 207.444,94.6419"
+				,fill: "white" 
+			}
+		  )
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.5) })
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.5) })
+	      ));	
+
+		// Ajout du modèle de disjoncteur ferme
+ 		myDiagram.nodeTemplateMap.add("DisjFerme", 
+		$(go.Node, "Auto", shapeStyle(),
+		  new go.Binding("location", "loc", go.Point.parse),
+		  new go.Binding("angle", "angle"),
+		  $(go.Shape,
+			{ 	geometryString: "F1 M 180.463,60.879L 165.663,26.6383C 146.863,11.998 137.103,-4.56236 129.262,31.0384L 126.462,44.0787M 115.022,44.1587L 139.423,112M 140.383,50.3988L 110.462,112.72M 247.905,79.2794L 108.622,40.1586M 354.467,63.5991L 354.787,96.7198M 242.945,78.6394L 364.627,78.7994M 32.7803,60.479L 32.9403,95.9198M 123.422,78.3994L 12.7799,78.7194"
+				,fill: "white" 
+			}
+		  )
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0.5) })
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0.5) })
+	      ));		
+
+		// Ajout du modèle de jeu de barre
+ 		myDiagram.nodeTemplateMap.add("jeuBarre", 
+		$(go.Node, "Auto", shapeStyle(),
+		  new go.Binding("location", "loc", go.Point.parse),
+		  new go.Binding("angle", "angle"),
+		  $(go.Shape,
+			{ 	geometryString: "m 50 320 220 0"
+				,fill: "white" 
+			}
+		  ), 
+		  $(go.Shape,
+			{ 	geometryString: "m 160 320 0 70"
+				,fill: "white" 
+			}
+		  ), 
+		  $(go.Shape,
+			{ 	geometryString: "m 160 320 0 -70"
+				,fill: "white" 
+			}
+		  )
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Left0", fromSpot: go.Spot.Left, toSpot: go.Spot.Left, alignment: new go.Spot(0, 0) })
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Right0", fromSpot: go.Spot.Right, toSpot: go.Spot.Right, alignment: new go.Spot(1, 0) })
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
+	      ));	
+		
+		// Ajout du modèle de Depart
+ 		myDiagram.nodeTemplateMap.add("Tore", 
+		$(go.Node, "Auto", shapeStyle(),
+		  new go.Binding("location", "loc", go.Point.parse),
+		  new go.Binding("angle", "angle"),
+		  $(go.Shape,
+			{ 	geometryString: "F1 M 213.964,108.842C 213.964,166.603 166.683,214.044 108.762,214.044C 50.121,214.044 2.83997,166.603 2.83997,108.842C 2.83997,50.361 50.121,2.83994 108.762,2.83994C 166.683,2.83994 213.964,50.361 213.964,108.842 Z "
+				,fill: "white" 
+			}
+		  )
+		  ,$(go.Shape, "Rectangle", portStyle(), { portId: "Bottom0", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom, alignment: new go.Spot(0.5, 1) })
+	      ));	
+		
+		// Une fonction pour construire le contenu d'un tooltip
+		function diagramInfo(model) {
+			return 	model.nodeDataArray.length + " noeuds, " + model.linkDataArray.length + " liens";
+		}
+		// Mise en place d'un tooltip sur le background du diagramme
+		myDiagram.toolTip =
+		$(go.Adornment, "Auto",
+		  $(go.Shape, { fill: "#CCFFCC" }),
+		  $(go.TextBlock, { margin: 4 },
+			// on binde le tooltip sur le résultat d'une fonction
+			new go.Binding("text", "", diagramInfo))
+		);
+		
+		// Contenu du diagramme
+		myDiagram.model.nodeDataArray = [
+{key:"2", loc:"160 10", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"3", loc:"160 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
+{key:"4", loc:"230 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
+{key:"5", loc:"230 10", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"6", loc:"310 10", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"7", loc:"390 10", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"8", loc:"310 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
+{key:"9", loc:"390 60", angle:90, category:"TransfoPuissance", desc:"PROTOTYPE TRANSFORMATEUR SOURCE - PROTOTYPE TRANSFORMATEUR SOURCE"},
+{key:"10", loc:"560 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"11", loc:"620 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"12", loc:"680 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"13", loc:"730 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"14", loc:"790 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"16", loc:"900 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"17", loc:"1020 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"15", loc:"850 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"18", loc:"260 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"19", loc:"320 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"20", loc:"380 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"21", loc:"440 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"22", loc:"500 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"23", loc:"560 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"24", loc:"700 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"25", loc:"900 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"26", loc:"950 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"27", loc:"1010 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"28", loc:"1060 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"29", loc:"1110 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"30", loc:"1150 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"31", loc:"1210 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"32", loc:"1270 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"33", loc:"860 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"34", loc:"810 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"35", loc:"500 290", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"36", loc:"560 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"37", loc:"500 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"38", loc:"620 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"39", loc:"680 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"40", loc:"730 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"41", loc:"790 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"42", loc:"850 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"43", loc:"900 360", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"44", loc:"1020 380", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"45", loc:"200 560", category:"jeuBarre", desc:"Jeu de barre - Jeu de barre"},
+{key:"46", loc:"200 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"47", loc:"260 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"48", loc:"320 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"49", loc:"380 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"50", loc:"440 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"51", loc:"500 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"52", loc:"560 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"53", loc:"700 630", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"54", loc:"810 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"55", loc:"860 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"56", loc:"900 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"57", loc:"950 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"59", loc:"1060 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"61", loc:"1110 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"62", loc:"1150 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"63", loc:"1210 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"64", loc:"1270 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"65", loc:"1010 640", angle:90, category:"DisjFerme", desc:"PROTOTYPE APPAREIL COUPURE - PROTOTYPE APPAREIL COUPURE"},
+{key:"58", loc:"270 -70", category:"Tore", desc:"Test Reseau RTE - Test Reseau RTE"}
+		  ];
+		  
+		  // On binde les liens sur les propriétés fromport et toport des liens
+		  myDiagram.model.linkFromPortIdProperty = "fromPort";
+          myDiagram.model.linkToPortIdProperty = "toPort";
+		// Liens du diagrame
+		myDiagram.model.linkDataArray = [
+{from:"3", to:"2", fromPort:"Left0", toPort:"Bottom0", points:[160, 30, 160, 20, 160, 20, 160, 40, 160, 40, 160, 30], Key:"4"},
+{from:"5", to:"4", fromPort:"Bottom0", toPort:"Left0", points:[230, 30, 230, 40, 230, 40, 230, 20, 230, 20, 230, 30], Key:"9"},
+{from:"5", to:"2", fromPort:"Left0", toPort:"Right0", points:[200, 10, 190, 10, 190, 10, 200, 10, 200, 10, 190, 10], Key:"10"},
+{from:"6", to:"5", fromPort:"Left0", toPort:"Right0", points:[280, 10, 270, 10, 270, 10, 270, 10, 270, 10, 260, 10], Key:"16"},
+{from:"7", to:"6", fromPort:"Left0", toPort:"Right0", points:[360, 10, 350, 10, 350, 10, 350, 10, 350, 10, 340, 10], Key:"25"},
+{from:"6", to:"8", fromPort:"Bottom0", toPort:"Left0", points:[310, 30, 310, 40, 310, 40, 310, 20, 310, 20, 310, 30], Key:"33"},
+{from:"7", to:"9", fromPort:"Bottom0", toPort:"Left0", points:[390, 30, 390, 40, 390, 40, 390, 20, 390, 20, 390, 30], Key:"34"},
+{from:"11", to:"10", fromPort:"Left0", toPort:"Right0", points:[590, 290, 580, 290, 580, 290, 600, 290, 600, 290, 590, 290], Key:"41"},
+{from:"12", to:"11", fromPort:"Left0", toPort:"Right0", points:[650, 290, 640, 290, 640, 290, 660, 290, 660, 290, 650, 290], Key:"56"},
+{from:"13", to:"12", fromPort:"Left0", toPort:"Right0", points:[700, 290, 690, 290, 690, 290, 720, 290, 720, 290, 710, 290], Key:"72"},
+{from:"14", to:"13", fromPort:"Left0", toPort:"Right0", points:[760, 290, 750, 290, 750, 290, 770, 290, 770, 290, 760, 290], Key:"89"},
+{from:"17", to:"16", fromPort:"Left0", toPort:"Right0", points:[990, 290, 980, 290, 980, 290, 980, 290, 940, 290, 930, 290], Key:"141"},
+{from:"15", to:"14", fromPort:"Left0", toPort:"Right0", points:[820, 290, 810, 290, 810, 290, 830, 290, 830, 290, 820, 290], Key:"155"},
+{from:"19", to:"18", fromPort:"Left0", toPort:"Right0", points:[290, 560, 280, 560, 280, 560, 300, 560, 300, 560, 290, 560], Key:"164"},
+{from:"20", to:"19", fromPort:"Left0", toPort:"Right0", points:[350, 560, 340, 560, 340, 560, 360, 560, 360, 560, 350, 560], Key:"176"},
+{from:"21", to:"20", fromPort:"Left0", toPort:"Right0", points:[410, 560, 400, 560, 400, 560, 420, 560, 420, 560, 410, 560], Key:"181"},
+{from:"22", to:"21", fromPort:"Left0", toPort:"Right0", points:[470, 560, 460, 560, 460, 560, 480, 560, 480, 560, 470, 560], Key:"188"},
+{from:"23", to:"22", fromPort:"Left0", toPort:"Right0", points:[530, 560, 520, 560, 520, 560, 540, 560, 540, 560, 530, 560], Key:"193"},
+{from:"24", to:"23", fromPort:"Left0", toPort:"Right0", points:[670, 560, 660, 560, 660, 560, 660, 560, 600, 560, 590, 560], Key:"198"},
+{from:"26", to:"25", fromPort:"Left0", toPort:"Right0", points:[920, 560, 910, 560, 910, 560, 940, 560, 940, 560, 930, 560], Key:"210"},
+{from:"27", to:"26", fromPort:"Left0", toPort:"Right0", points:[980, 560, 970, 560, 970, 560, 990, 560, 990, 560, 980, 560], Key:"231"},
+{from:"28", to:"27", fromPort:"Left0", toPort:"Right0", points:[1030, 560, 1020, 560, 1020, 560, 1050, 560, 1050, 560, 1040, 560], Key:"238"},
+{from:"29", to:"28", fromPort:"Left0", toPort:"Right0", points:[1080, 560, 1070, 560, 1070, 560, 1100, 560, 1100, 560, 1090, 560], Key:"248"},
+{from:"30", to:"29", fromPort:"Left0", toPort:"Right0", points:[1120, 560, 1110, 560, 1110, 560, 1150, 560, 1150, 560, 1140, 560], Key:"271"},
+{from:"31", to:"30", fromPort:"Left0", toPort:"Right0", points:[1180, 560, 1170, 560, 1170, 560, 1190, 560, 1190, 560, 1180, 560], Key:"297"},
+{from:"32", to:"31", fromPort:"Left0", toPort:"Right0", points:[1240, 560, 1230, 560, 1230, 560, 1250, 560, 1250, 560, 1240, 560], Key:"302"},
+{from:"33", to:"25", fromPort:"Right0", toPort:"Left0", points:[890, 560, 900, 560, 900, 560, 860, 560, 860, 560, 870, 560], Key:"307"},
+{from:"34", to:"33", fromPort:"Right0", toPort:"Left0", points:[840, 560, 850, 560, 850, 560, 820, 560, 820, 560, 830, 560], Key:"314"},
+{from:"9", to:"37", fromPort:"Right0", toPort:"Right0", points:[390, 90, 390, 100, 390, 100, 390, 100, 390, 404, 500, 404, 500, 400, 500, 390], Key:"315"},
+{from:"35", to:"10", fromPort:"Right0", toPort:"Left0", points:[530, 290, 540, 290, 540, 290, 520, 290, 520, 290, 530, 290], Key:"335"},
+{from:"36", to:"10", fromPort:"Left0", toPort:"Bottom0", points:[560, 330, 560, 320, 560, 320, 560, 320, 560, 320, 560, 310], Key:"351"},
+{from:"37", to:"35", fromPort:"Left0", toPort:"Bottom0", points:[500, 330, 500, 320, 500, 320, 500, 320, 500, 320, 500, 310], Key:"362"},
+{from:"38", to:"11", fromPort:"Left0", toPort:"Bottom0", points:[620, 330, 620, 320, 620, 320, 620, 320, 620, 320, 620, 310], Key:"364"},
+{from:"17", to:"44", fromPort:"Bottom0", toPort:"Left0", points:[1020, 310, 1020, 320, 1020, 320, 1020, 320, 1020, 340, 1020, 350], Key:"365"},
+{from:"16", to:"43", fromPort:"Bottom0", toPort:"Left0", points:[900, 310, 900, 320, 900, 320, 900, 320, 900, 320, 900, 330], Key:"366"},
+{from:"15", to:"42", fromPort:"Bottom0", toPort:"Left0", points:[850, 310, 850, 320, 850, 320, 850, 320, 850, 320, 850, 330], Key:"367"},
+{from:"14", to:"41", fromPort:"Bottom0", toPort:"Left0", points:[790, 310, 790, 320, 790, 320, 790, 320, 790, 320, 790, 330], Key:"368"},
+{from:"13", to:"40", fromPort:"Bottom0", toPort:"Left0", points:[730, 310, 730, 320, 730, 320, 730, 320, 730, 320, 730, 330], Key:"369"},
+{from:"12", to:"39", fromPort:"Bottom0", toPort:"Left0", points:[680, 310, 680, 320, 680, 320, 680, 320, 680, 320, 680, 330], Key:"370"},
+{from:"45", to:"18", fromPort:"Right0", toPort:"Left0", points:[230, 560, 240, 560, 240, 560, 220, 560, 220, 560, 230, 560], Key:"377"},
+{from:"45", to:"46", fromPort:"Bottom0", toPort:"Left0", points:[200, 580, 200, 590, 200, 590, 200, 590, 200, 600, 200, 610], Key:"378"},
+{from:"18", to:"47", fromPort:"Bottom0", toPort:"Left0", points:[260, 580, 260, 590, 260, 590, 260, 590, 260, 600, 260, 610], Key:"379"},
+{from:"19", to:"48", fromPort:"Bottom0", toPort:"Left0", points:[320, 580, 320, 590, 320, 590, 320, 590, 320, 600, 320, 610], Key:"380"},
+{from:"20", to:"49", fromPort:"Bottom0", toPort:"Left0", points:[380, 580, 380, 590, 380, 590, 380, 590, 380, 600, 380, 610], Key:"381"},
+{from:"21", to:"50", fromPort:"Bottom0", toPort:"Left0", points:[440, 580, 440, 590, 440, 590, 440, 590, 440, 600, 440, 610], Key:"382"},
+{from:"22", to:"51", fromPort:"Bottom0", toPort:"Left0", points:[500, 580, 500, 590, 500, 590, 500, 590, 500, 600, 500, 610], Key:"383"},
+{from:"23", to:"52", fromPort:"Bottom0", toPort:"Left0", points:[560, 580, 560, 590, 560, 590, 560, 590, 560, 600, 560, 610], Key:"384"},
+{from:"24", to:"53", fromPort:"Bottom0", toPort:"Left0", points:[700, 580, 700, 590, 700, 590, 700, 590, 700, 590, 700, 600], Key:"385"},
+{from:"34", to:"54", fromPort:"Bottom0", toPort:"Left0", points:[810, 580, 810, 590, 810, 590, 810, 590, 810, 600, 810, 610], Key:"386"},
+{from:"33", to:"55", fromPort:"Bottom0", toPort:"Left0", points:[860, 580, 860, 590, 860, 590, 860, 590, 860, 600, 860, 610], Key:"387"},
+{from:"25", to:"56", fromPort:"Bottom0", toPort:"Left0", points:[900, 580, 900, 590, 900, 590, 900, 590, 900, 600, 900, 610], Key:"388"},
+{from:"26", to:"57", fromPort:"Bottom0", toPort:"Left0", points:[950, 580, 950, 590, 950, 590, 950, 590, 950, 600, 950, 610], Key:"389"},
+{from:"27", to:"65", fromPort:"Bottom0", toPort:"Left0", points:[1010, 580, 1010, 590, 1010, 590, 1010, 590, 1010, 600, 1010, 610], Key:"390"},
+{from:"28", to:"59", fromPort:"Bottom0", toPort:"Left0", points:[1060, 580, 1060, 590, 1060, 595, 1060, 595, 1060, 600, 1060, 610], Key:"391"},
+{from:"29", to:"61", fromPort:"Bottom0", toPort:"Left0", points:[1110, 580, 1110, 590, 1110, 595, 1110, 595, 1110, 600, 1110, 610], Key:"392"},
+{from:"30", to:"62", fromPort:"Bottom0", toPort:"Left0", points:[1150, 580, 1150, 590, 1150, 595, 1150, 595, 1150, 600, 1150, 610], Key:"393"},
+{from:"31", to:"63", fromPort:"Bottom0", toPort:"Left0", points:[1210, 580, 1210, 590, 1210, 595, 1210, 595, 1210, 600, 1210, 610], Key:"394"},
+{from:"32", to:"64", fromPort:"Bottom0", toPort:"Left0", points:[1270, 580, 1270, 590, 1270, 595, 1270, 595, 1270, 600, 1270, 610], Key:"395"},
+{from:"3", to:"46", fromPort:"Right0", toPort:"Right0", points:[160, 90, 160, 100, 160, 680, 180, 680, 200, 680, 200, 670], Key:"396"},
+{from:"53", to:"54", fromPort:"Right0", toPort:"Right0", points:[700, 660, 700, 670, 700, 680, 755, 680, 810, 680, 810, 670], Key:"398"},
+{from:"47", fromPort:"Right0", points:[260, 670, 260, 680, 260, 695.55097532525519, 256.53105525510205, 695.55097532525519, 256.53105525510205, 711.10195065051039, 256.53105525510205, 721.10195065051039], Key:"401"},
+{from:"48", fromPort:"Right0", points:[320, 670, 320, 680, 320, 695.55097532525519, 315.24000713010207, 695.55097532525519, 315.24000713010207, 711.10195065051039, 315.24000713010207, 721.10195065051039], Key:"402"},
+{from:"49", fromPort:"Right0", points:[380, 670, 380, 680, 380, 696.8272568877552, 379.05408525510205, 696.8272568877552, 379.05408525510205, 713.6545137755104, 379.05408525510205, 723.6545137755104], Key:"403"},
+{from:"50", fromPort:"Right0", points:[440, 670, 440, 680, 440, 696.18911610650514, 430.10534775510212, 696.18911610650514, 430.10534775510212, 712.37823221301028, 430.10534775510212, 722.37823221301028], Key:"404"},
+{from:"51", fromPort:"Right0", points:[500, 670, 500, 680, 500, 697.46539766900514, 497.74827056760216, 697.46539766900514, 497.74827056760216, 714.93079533801028, 497.74827056760216, 724.93079533801028], Key:"405"},
+{from:"52", fromPort:"Right0", points:[560, 670, 560, 680, 560, 695.55097532525519, 556.45722244260207, 695.55097532525519, 556.45722244260207, 711.10195065051039, 556.45722244260207, 721.10195065051039], Key:"406"},
+{from:"56", fromPort:"Right0", points:[900, 670, 900, 680, 900, 696.8272568877552, 898.5006811926022, 696.8272568877552, 898.5006811926022, 713.6545137755104, 898.5006811926022, 723.6545137755104], Key:"407"},
+{from:"57", fromPort:"Right0", points:[950, 670, 950, 680, 950, 696.8272568877552, 950.82822525510221, 696.8272568877552, 950.82822525510221, 713.6545137755104, 950.82822525510221, 723.6545137755104], Key:"408"},
+{from:"65", fromPort:"Right0", points:[1010, 670, 1010, 680, 1010, 696.8272568877552, 1006.9846140051022, 696.8272568877552, 1006.9846140051022, 713.6545137755104, 1006.9846140051022, 723.6545137755104], Key:"409"},
+{from:"59", fromPort:"Right0", points:[1060, 670, 1060, 680, 1060, 697.46539766900514, 1059.3121580676022, 697.46539766900514, 1059.3121580676022, 714.93079533801028, 1059.3121580676022, 724.93079533801028], Key:"410"},
+{from:"61", fromPort:"Right0", points:[1110, 670, 1110, 680, 1110, 697.46539766900514, 1105.2582943176024, 697.46539766900514, 1105.2582943176024, 714.93079533801028, 1105.2582943176024, 724.93079533801028], Key:"411"},
+{from:"62", fromPort:"Right0", points:[1150, 670, 1150, 680, 1150, 697.46539766900514, 1146.0993043176022, 697.46539766900514, 1146.0993043176022, 714.93079533801028, 1146.0993043176022, 724.93079533801028], Key:"412"},
+{from:"36", fromPort:"Right0", points:[560, 390, 560, 400, 560, 404, 553.90465931760207, 404, 553.90465931760207, 434.14885158801025, 553.90465931760207, 444.14885158801025], Key:"413"},
+{from:"38", fromPort:"Right0", points:[620, 390, 620, 400, 621.54758213010211, 400, 621.54758213010211, 400, 621.54758213010211, 425.21488065051022, 621.54758213010211, 435.21488065051022], Key:"414"},
+{from:"39", fromPort:"Right0", points:[680, 390, 680, 400, 680, 404, 676.42768931760213, 404, 676.42768931760213, 431.59628846301024, 676.42768931760213, 441.59628846301024], Key:"415"},
+{from:"40", fromPort:"Right0", points:[730, 390, 730, 400, 728.75523338010214, 400, 728.75523338010214, 400, 728.75523338010214, 434.14885158801025, 728.75523338010214, 444.14885158801025], Key:"416"},
+{from:"41", fromPort:"Right0", points:[790, 390, 790, 400, 787.46418525510217, 400, 787.46418525510217, 400, 787.46418525510217, 435.42513315051025, 787.46418525510217, 445.42513315051025], Key:"417"},
+{from:"42", fromPort:"Right0", points:[850, 390, 850, 400, 850, 404, 847.44941869260219, 404, 847.44941869260219, 434.14885158801025, 847.44941869260219, 444.14885158801025], Key:"418"},
+{from:"3", to:"44", fromPort:"Right0", toPort:"Right0", points:[160, 90, 160, 100, 160, 179, 1154, 179, 1154, 410, 1020, 410, 1020, 420, 1020, 410], Key:"420"},
+{from:"64", fromPort:"Right0", points:[1270, 670, 1270, 680, 1333, 680, 1333, 90.25, 401.19749999999988, 90.25, 391.19749999999988, 90.25], Key:"421"},
+{from:"58", to:"6", fromPort:"Bottom0", toPort:"Left0", points:[270, -50, 270, -40, 270, -36, 270, -36, 270, 10, 270, 10, 280, 10], Key:"445"}
+		];
+		myDiagram.zoomToFit();
+    }
+  </script>
+</head>
+<body onload="init()">
+<div id="sample">
+
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
+
+</body>
+</html>
